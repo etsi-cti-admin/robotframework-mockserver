@@ -1,5 +1,3 @@
-ARGS ?=
-
 MOCK_SERVER = mock_server
 MOCK_TESTER = mock_tester
 
@@ -21,7 +19,7 @@ server/stop: ## Stop mock server
 
 .PHONY: tester/test
 tester/test: ## Run integration tests
-	docker-compose up $(ARGS) $(MOCK_TESTER)
+	docker-compose up $(COMPOSE_ARGS) $(MOCK_TESTER)
 
 .PHONY: lint
 lint: ## Run static code analysis
