@@ -10,6 +10,6 @@ setup(name='robotframework-mockserver',
       author_email='timo.yrjola@gmail.com',
       url='https://github.com/tyrjola/robotframework-mockserver',
       download_url='https://github.com/tyrjola/robotframework-mockserver/archive/0.0.1.tar.gz',
-      keywords=['testing', 'robotframework', 'mockserver'],
+      keywords='testing robotframework mockserver',
       classifiers=[],
       install_requires=['requests'])
