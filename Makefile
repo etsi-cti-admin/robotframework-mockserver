@@ -9,6 +9,10 @@ help: ## Print help
 	@echo "------------------------------------------------------------------------"
 	@awk -F ":.*##" '/:.*##/ && ! /\t/ {printf "\033[36m%-25s\033[0m%s\n", $$1, $$2}' $(MAKEFILE_LIST) | sort
 
+.PHONY: setup
+setup: ## Setup dev environment
+	sudo pip install -r requirements.txt
+
 .PHONY: server/run
 server/run: ## Run mock server
 	ROBOT_ARGS=$(ROBOT_ARGS) docker-compose up -d $(MOCK_SERVER)
@@ -24,3 +28,7 @@ tester/test: ## Run integration tests
 .PHONY: lint
 lint: ## Run static code analysis
 	flake8
+
+.PHONY: release
+release: ## Release package to PyPI
+	twine upload dist/*
