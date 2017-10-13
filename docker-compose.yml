@@ -1,0 +1,17 @@
+version: '2'
+services:
+  mock_server:
+    image: jamesdbloom/mockserver:mockserver-3.11
+  mock_tester:
+    build:
+      context: .
+      dockerfile: resources/docker/tester/Dockerfile
+    volumes:
+      - ./src:/home/robot/src
+      - ./tests/robot/tests:/home/robot/tests
+      - ./tests/robot/logs:/home/robot/logs
+    environment:
+      - MOCK_URL=http://mock_server:1080
+      - ROBOT_ARGS
+    depends_on:
+      - mock_server
