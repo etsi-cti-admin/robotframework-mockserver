@@ -25,67 +25,105 @@ Success On Expected GET
     &{rsp}=  Create Mock Response  status_code=200
     Create Mock Expectation  ${req}  ${rsp}
     Send GET Expect Success  ${ENDPOINT}
-    Verify Mock Expectation  ${req}
 
 Success On Expected GET With Specified Data
     Create Mock Expectation With Data  ${MOCK_DATA}
     Send GET Expect Success  ${ENDPOINT}
-    Verify Mock Expectation With Data  ${VERIFY_DATA}
 
-Failure On Missing GET
-    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
+Failure On GET With Mismatched Method
+    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status_code=200
     Create Mock Expectation  ${req}  ${rsp}
-    Run Keyword And Expect Error  *  Verify Mock Expectation  ${req}
+    Send GET Expect Failure  endpoint=${ENDPOINT}
 
 Failure On GET With Mismatched Endpoint
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status_code=200
     Create Mock Expectation  ${req}  ${rsp}
-    Send GET Expect Success  endpoint=${ENDPOINT}
-    ${mismatched}=  Set Variable  /mismatch
-    &{req_mis}=  Create Mock Request Matcher  GET  ${mismatched}
-    Run Keyword And Expect Error  *  Verify Mock Expectation  ${req_mis}
+    Send GET Expect Failure  endpoint=/mismatched
 
 Success On Expected GET With Response Body
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status_code=200  headers=${HEADERS}  body=${BODY}
     Create Mock Expectation  ${req}  ${rsp}
     Send GET Expect Success  ${ENDPOINT}  response_headers=${HEADERS}  response_body=${BODY}
-    Verify Mock Expectation  ${req}
 
 Success On Two Expected GETs
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status_code=200
     Create Mock Expectation  ${req}  ${rsp}  count=2
     Repeat Keyword  2  Send GET Expect Success  ${ENDPOINT}
-    Verify Mock Expectation  ${req}  count=2
 
-Failure On Too Many GETs
+Success On Expected POST With Body
+    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  body=${BODY}
+    &{rsp}=  Create Mock Response  status_code=201
+    Create Mock Expectation  ${req}  ${rsp}
+    Send POST Expect Success  ${ENDPOINT}  ${BODY}
+
+Failure On POST With Mismatched Body
+    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  body=${BODY}
+    &{rsp}=  Create Mock Response  status_code=201
+    Create Mock Expectation  ${req}  ${rsp}
+    &{mismatched}=  Create Dictionary  var1=mismatch  var2=value2
+    Send POST Expect Failure  ${ENDPOINT}  ${mismatched}
+
+Success On Verify
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status_code=200
     Create Mock Expectation  ${req}  ${rsp}
-    Repeat Keyword  2  Send GET Expect Success  ${ENDPOINT}
-    Run Keyword And Expect Error  *  Verify Mock Expectation  ${req}  count=1
+    Send GET Expect Success  ${ENDPOINT}
+    Verify Mock Expectation  ${req}
 
-Success On Unspecified Number Of GETs
+Success On Verify With Two Expected GETs
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
+    &{rsp}=  Create Mock Response  status_code=200
+    Create Mock Expectation  ${req}  ${rsp}  count=2
+    Repeat Keyword  2  Send GET Expect Success  ${ENDPOINT}
+    Verify Mock Expectation  ${req}  count=2
+
+Success On Verify With Specified Data
+    Create Mock Expectation With Data  ${MOCK_DATA}
+    Send GET Expect Success  ${ENDPOINT}
+    Verify Mock Expectation With Data  ${VERIFY_DATA}
+
+Success On Verify With Unspecified Number Of GETs
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status_code=200
     Create Mock Expectation  ${req}  ${rsp}
     Repeat Keyword  3  Send GET Expect Success  ${ENDPOINT}
     Verify Mock Expectation  ${req}  exact=${false}
 
-Success On Expected POST With Body
-    [Tags]  smoke
+Success On Verify POST With Body
     &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  body=${BODY}
-    &{rsp}=  Create Mock Response  status_code=200
+    &{rsp}=  Create Mock Response  status_code=201
     Create Mock Expectation  ${req}  ${rsp}
     Send POST Expect Success  ${ENDPOINT}  ${BODY}
     Verify Mock Expectation  ${req}
 
-Failure On POST With Mismatched Body
-    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  body=${BODY}
+Failure On Verify With Missing GET
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status_code=200
+    Create Mock Expectation  ${req}  ${rsp}
+    Run Keyword And Expect Error  *  Verify Mock Expectation  ${req}
+
+Failure On Verify With Mismatched Endpoint
+    &{req}=  Create Mock Request Matcher  GET  /mismatched
+    &{rsp}=  Create Mock Response  status_code=200
+    Create Mock Expectation  ${req}  ${rsp}
+    Send GET Expect Success  endpoint=/mismatched
+    &{req_mis}=  Create Mock Request Matcher  GET  ${ENDPOINT}
+    Run Keyword And Expect Error  *  Verify Mock Expectation  ${ENDPOINT}
+
+Failure On Verify With Too Many GETs
+    &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
+    &{rsp}=  Create Mock Response  status_code=200
+    Create Mock Expectation  ${req}  ${rsp}
+    Repeat Keyword  2  Send GET Expect Success  ${ENDPOINT}
+    Run Keyword And Expect Error  *  Verify Mock Expectation  ${req}  count=1
+
+Failure On Verify POST With Mismatched Body
+    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  body=${BODY}
+    &{rsp}=  Create Mock Response  status_code=201
     Create Mock Expectation  ${req}  ${rsp}
     Send POST Expect Success  ${ENDPOINT}  ${BODY}
     &{mismatched}=  Create Dictionary  var1=mismatch  var2=value2
@@ -97,9 +135,10 @@ Success On Request Sequence
     &{req2}=  Create Mock Request Matcher  POST  /endpoint2
     &{req3}=  Create Mock Request Matcher  GET  /endpoint3
     &{rsp}=  Create Mock Response  status_code=200
+    &{rsp2}=  Create Mock Response  status_code=201
 
     Create Mock Expectation  ${req1}  ${rsp}
-    Create Mock Expectation  ${req2}  ${rsp}
+    Create Mock Expectation  ${req2}  ${rsp2}
     Create Mock Expectation  ${req3}  ${rsp}
 
     Send GET Expect Success  /endpoint1
@@ -114,9 +153,10 @@ Failure On Partial Request Sequence
     &{req2}=  Create Mock Request Matcher  POST  /endpoint2
     &{req3}=  Create Mock Request Matcher  GET  /endpoint3
     &{rsp}=  Create Mock Response  status_code=200
+    &{rsp2}=  Create Mock Response  status_code=201
 
     Create Mock Expectation  ${req1}  ${rsp}
-    Create Mock Expectation  ${req2}  ${rsp}
+    Create Mock Expectation  ${req2}  ${rsp2}
     Create Mock Expectation  ${req3}  ${rsp}
 
     Send GET Expect Success  /endpoint1
@@ -130,9 +170,10 @@ Failure On Misordered Request Sequence
     &{req2}=  Create Mock Request Matcher  POST  /endpoint2
     &{req3}=  Create Mock Request Matcher  GET  /endpoint3
     &{rsp}=  Create Mock Response  status_code=200
+    &{rsp2}=  Create Mock Response  status_code=201
 
     Create Mock Expectation  ${req1}  ${rsp}
-    Create Mock Expectation  ${req2}  ${rsp}
+    Create Mock Expectation  ${req2}  ${rsp2}
     Create Mock Expectation  ${req3}  ${rsp}
 
     Send POST Expect Success  /endpoint2
@@ -147,10 +188,6 @@ Success On Default GET Expectation
     Send GET Expect Success  ${ENDPOINT}
 
 Success On Default POST Expectation
-    Create Default Mock Expectation  POST  ${ENDPOINT}
-    Send POST Expect Success  ${ENDPOINT}
-
-Success On Default POST Create Expectation
     Create Default Mock Expectation  POST  ${ENDPOINT}  response_code=201
     Send POST Expect Success  ${ENDPOINT}  response_code=201
 
@@ -204,8 +241,21 @@ Send GET Expect Success
     Run Keyword If   ${response_headers != None}  Verify Response Headers  ${response_headers}  ${rsp.headers}
     Run Keyword If   ${response_body != None}  Verify Response Body  ${response_body}  ${rsp.json()}
 
+Send GET Expect Failure
+    [Arguments]  ${endpoint}=${ENDPOINT}  ${response_code}=404
+    ${rsp}=  Get Request  server  ${endpoint}
+    Should Be Equal As Strings  ${rsp.status_code}  ${response_code}
+
 Send POST Expect Success
-    [Arguments]  ${endpoint}=${ENDPOINT}  ${body}=${BODY}  ${response_code}=200
+    [Arguments]  ${endpoint}=${ENDPOINT}  ${body}=${BODY}  ${response_code}=201
+    Send POST  ${endpoint}  ${body}  ${response_code}
+
+Send POST Expect Failure
+    [Arguments]  ${endpoint}=${ENDPOINT}  ${body}=${BODY}  ${response_code}=404
+    Send POST  ${endpoint}  ${body}  ${response_code}
+
+Send POST
+    [Arguments]  ${endpoint}  ${body}  ${response_code}
     ${body_json}=  Evaluate  json.dumps(${body})  json
     ${rsp}=  Post Request  server  ${endpoint}  data=${body_json}
     Should Be Equal As Strings  ${rsp.status_code}  ${response_code}
