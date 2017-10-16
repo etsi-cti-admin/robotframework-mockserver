@@ -1,5 +1,6 @@
 *** Settings ***
 Library  String
+Library  Collections
 Library  RequestsLibrary
 Library  ../src/MockServerLibrary/Keywords.py
 Suite Setup  Create Sessions
@@ -10,7 +11,7 @@ Test Teardown  Reset Mock Server
 ${MOCK_URL}
 ${ENDPOINT}  /endpoint
 &{BODY}  var1=value1  var2=value2
-@{HEADERS}  Content-type: application/json  Cache-Control: max-age=3600
+&{HEADERS}  Content-type=application/json  Cache-Control=max-age\=3600
 ${MOCK_REQ}  {"method": "GET", "path": "${ENDPOINT}"}
 ${MOCK_RSP}  {"statusCode": 200}
 ${MOCK_TIMES}  {"remainingTimes": 1, "unlimited": true}
@@ -201,7 +202,7 @@ Send GET Expect Success
     ${rsp}=  Get Request  server  ${endpoint}
     Should Be Equal As Strings  ${rsp.status_code}  200
     Run Keyword If   ${response_headers != None}  Verify Response Headers  ${response_headers}  ${rsp.headers}
-    Run Keyword If   ${response_body != None}  Verify Response Body  ${response_body}  ${rsp.text}
+    Run Keyword If   ${response_body != None}  Verify Response Body  ${response_body}  ${rsp.json()}
 
 Send POST Expect Success
     [Arguments]  ${endpoint}=${ENDPOINT}  ${body}=${BODY}  ${response_code}=200
@@ -211,11 +212,8 @@ Send POST Expect Success
 
 Verify Response Headers
     [Arguments]  ${expected}  ${actual}
-    :FOR  ${header}  IN  @{expected}
-    \  ${actual_str}=  Convert To String  ${actual}
-    \  Should Contain  ${actual_str.replace("'", "")}  ${header}
+    Dictionary Should Contain Sub Dictionary  ${actual}  ${expected}
 
 Verify Response Body
     [Arguments]  ${expected}  ${actual}
-    ${exp_json}=  Evaluate  json.dumps(${expected})  json
-    Should Be Equal As Strings  ${exp_json}  ${actual}
+    Dictionaries Should Be Equal  ${expected}  ${actual}

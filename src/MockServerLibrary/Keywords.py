@@ -34,12 +34,10 @@ class Keywords(object):
         if headers:
             rsp['headers'] = []
 
-            for entry in headers:
-                Header = namedtuple('Header', 'name values')
-                header = Header(name=entry.split(": ")[0], values=entry.split(": ")[1].split(","))
-                logger.debug("Add header - name: {}, values: {}".format(header.name, header.values))
-
-                rsp['headers'].append(header._asdict())
+            for key, value in headers.items():
+                header = {'name': key, 'values': value.split(",")}
+                rsp['headers'].append(header)
+                logger.debug("Add header - header: {}".format(header))
 
         if body_type is 'JSON' and body:
             rsp['body'] = json.dumps(body)
