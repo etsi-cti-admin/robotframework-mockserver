@@ -31,4 +31,5 @@ lint: ## Run static code analysis
 
 .PHONY: release
 release: ## Release package to PyPI
+	python setup.py sdist
 	twine upload dist/*
