@@ -1,6 +1,8 @@
 MOCK_SERVER = mock_server
 MOCK_TESTER = mock_tester
 
+VERSION ?= $(shell grep -o "\([0-9]\+\.\)\+[0-9]\+" src/MockServerLibrary/version.py)
+
 .DEFAULT_GOAL := help
 .PHONY: help
 help: ## Print help
@@ -32,4 +34,8 @@ lint: ## Run static code analysis
 .PHONY: release
 release: ## Release package to PyPI
 	python setup.py sdist
-	twine upload dist/*
+	twine upload dist/robotframework-mockserver-$(VERSION).tar.gz
+
+.PHONY: version/tag
+version/tag: ## Tag HEAD with new version tag
+	git tag -a $(VERSION) -m "$(VERSION)"

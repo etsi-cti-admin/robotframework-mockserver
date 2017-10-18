@@ -4,7 +4,9 @@ from urllib.parse import urljoin
 from collections import namedtuple
 from robot.api import logger
 
-__version__ = '0.0.1'
+from .version import VERSION
+
+__version__ = VERSION
 
 
 class MockServerLibrary(object):
