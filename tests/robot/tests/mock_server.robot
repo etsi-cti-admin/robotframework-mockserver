@@ -2,7 +2,7 @@
 Library  String
 Library  Collections
 Library  RequestsLibrary
-Library  ../src/MockServerLibrary/Keywords.py
+Library  MockServerLibrary
 Suite Setup  Create Sessions
 Test Teardown  Reset Mock Server
 

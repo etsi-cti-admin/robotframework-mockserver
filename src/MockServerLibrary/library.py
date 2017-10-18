@@ -4,10 +4,13 @@ from urllib.parse import urljoin
 from collections import namedtuple
 from robot.api import logger
 
+__version__ = '0.0.1'
 
-class Keywords(object):
 
-    ROBOT_LIBRARY_SCOPE = 'TEST SUITE'
+class MockServerLibrary(object):
+
+    ROBOT_LIBRARY_SCOPE = 'GLOBAL'
+    ROBOT_LIBRARY_VERSION = __version__
 
     def create_mock_session(self, base_url):
         """Create an HTTP session towards the mock server"""

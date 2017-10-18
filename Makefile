@@ -23,7 +23,7 @@ server/stop: ## Stop mock server
 
 .PHONY: tester/test
 tester/test: ## Run integration tests
-	docker-compose up $(COMPOSE_ARGS) $(MOCK_TESTER)
+	docker-compose up --build --force-recreate $(MOCK_TESTER)
 
 .PHONY: lint
 lint: ## Run static code analysis

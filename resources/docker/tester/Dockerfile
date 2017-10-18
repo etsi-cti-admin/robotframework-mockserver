@@ -6,11 +6,15 @@ RUN apk update && apk add curl
 
 WORKDIR /home/robot
 
-ADD src ./src
-ADD tests/robot/tests ./tests
-ADD tests/robot/requirements.txt .
-ADD tests/robot/run_tests.sh .
-ADD resources/scripts/wait-for-url.sh .
+COPY src ./src
+COPY resources/scripts/setup.py .
+COPY tests/robot/tests .
+COPY tests/robot/requirements.txt .
+COPY tests/robot/run_tests.sh .
+COPY resources/scripts/wait-for-url.sh .
+
+## Build development distribution
+RUN python setup.py sdist
 
 RUN pip install -r requirements.txt
 
