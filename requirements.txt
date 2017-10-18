@@ -1,3 +1,4 @@
 docker-compose==1.13.0
 twine==1.9.1
 flake8==3.3.0
+robotframework==3.0.2

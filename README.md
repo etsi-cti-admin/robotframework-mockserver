@@ -17,9 +17,9 @@ Add library to settings section:
 Library  MockServerLibrary
 ```
 
-Keyword documentation: WIP --> link will be added here
+[Keyword documentation for the latest release](https://tyrjola.github.io/docs/robotframework-mockserver.html)
 
-See tests/robot/tests/mock_server.robot for detailed examples.
+See tests/robot/tests/mock_server.robot for detailed usage examples.
 
 ## Development
 
@@ -28,6 +28,7 @@ Prerequisites:
 * docker-compose (to run integration tests)
 * flake8 (for static code analysis)
 * twine (release)
+* robot-framework (for doc generation)
 
 Install prerequisites:
 
