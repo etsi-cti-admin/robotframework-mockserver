@@ -31,8 +31,12 @@ tester/test: ## Run integration tests
 lint: ## Run static code analysis
 	flake8
 
+.PHONY: clean
+clean: ## Clean dist
+	rm -rf dist MANIFEST
+
 .PHONY: release
-release: ## Release package to PyPI
+release: clean ## Release package to PyPI
 	python setup.py sdist
 	twine upload dist/robotframework-mockserver-$(VERSION).tar.gz
 
