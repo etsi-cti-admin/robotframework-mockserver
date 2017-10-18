@@ -29,7 +29,7 @@ tester/test: ## Run integration tests
 
 .PHONY: lint
 lint: ## Run static code analysis
-	flake8
+	flake8 src
 
 .PHONY: clean
 clean: ## Clean dist

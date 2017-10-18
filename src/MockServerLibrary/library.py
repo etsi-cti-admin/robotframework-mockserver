@@ -1,7 +1,6 @@
 import requests
 import json
 from urllib.parse import urljoin
-from collections import namedtuple
 from robot.api import logger
 
 from .version import VERSION
