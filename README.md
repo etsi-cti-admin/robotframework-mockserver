@@ -17,7 +17,7 @@ Add library to settings section:
 Library  MockServerLibrary
 ```
 
-[Keyword documentation for the latest release](https://tyrjola.github.io/docs/robotframework-mockserver.html)
+[Keyword documentation for the latest release](https://etsi-cti-admin.github.io/docs/robotframework-mockserver.html)
 
 See tests/robot/tests/mock_server.robot for detailed usage examples.
 
@@ -30,7 +30,7 @@ Prerequisites:
 * twine (release)
 * robot-framework (for doc generation)
 
-Install prerequisites:
+Install prerequisites (execute inside a python3 virtual environment):
 
 ```sh
 $ make setup
@@ -53,3 +53,13 @@ Run lint:
 ```sh
 $ make lint
 ```
+
+Release process:
+
+1. Increment version number in src/MockServerLibrary/version.py and commit the change
+2. Tag the commit with the new version by issuing `make version/tag`
+3. Push the commit and tag to Github (use `git push` with the `--follow-tags` option)
+4. Publish the release to PyPI with `make release`
+5. Clone the documentation repository to ../etsi-cti-admin.github.io
+5. Generate the documentation with `make docs`
+6. Publish then the resulting commit in ../etsi-cti-admin.github.io to Github

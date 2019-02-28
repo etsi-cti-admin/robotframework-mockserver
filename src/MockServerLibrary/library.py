@@ -13,7 +13,7 @@ class MockServerLibrary(object):
 
     The purpose of this library is to provide a keyword-based API
     towards MockServer to be used in robot tests. The project is hosted in
-    [https://github.com/tyrjola/robotframework-mockserver|GitHub],
+    [https://github.com/etsi-cti-admin/robotframework-mockserver|GitHub],
     and packages are released to PyPI.
 
     = Installation =
