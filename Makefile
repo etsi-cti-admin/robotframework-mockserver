@@ -13,7 +13,7 @@ help: ## Print help
 
 .PHONY: setup
 setup: ## Setup dev environment
-	sudo pip install -r requirements.txt
+	pip install -r requirements.txt
 
 .PHONY: server/run
 server/run: ## Run mock server
