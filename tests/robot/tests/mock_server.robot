@@ -16,7 +16,7 @@ ${MOCK_REQ}  {"method": "GET", "path": "${ENDPOINT}"}
 ${MOCK_RSP}  {"statusCode": 200}
 ${MOCK_TIMES}  {"remainingTimes": 1, "unlimited": true}
 ${MOCK_DATA}  {"httpRequest": ${MOCK_REQ}, "httpResponse": ${MOCK_RSP}, "times": ${MOCK_TIMES}}
-${VERIFY_DATA}  {"httpRequest": ${MOCK_REQ}, "times": {"count": 1, "exact": true}}
+${VERIFY_DATA}  {"httpRequest": ${MOCK_REQ}, "times": {"atLeast": 1, "atMost": 1}}
 
 
 *** Test Cases ***

@@ -196,7 +196,10 @@ class MockServerLibrary(object):
         """
         data = {}
         data['httpRequest'] = request
-        data['times'] = {'count': int(count), 'exact': exact}
+        if exact:
+            data['times'] = {'atLeast': int(count), 'atMost': int(count)}
+        else:
+            data['times'] = {'atLeast': int(count)}
 
         self.verify_mock_expectation_with_data(data)
 
@@ -238,7 +241,7 @@ class MockServerLibrary(object):
         body = {}
         body['path'] = path
         data = json.dumps(body)
-        return self._send_request("/retrieve?type=expectation", data)
+        return self._send_request("/retrieve?type=active_expectations", data)
 
     def clear_requests(self, path):
         """Clears expectations and requests for a specific endpoint from the mockserver.
@@ -258,7 +261,8 @@ class MockServerLibrary(object):
     def dump_to_log(self):
         """Dumps logs at the mockserver.
         """
-        self._send_request("/dumpToLog")
+        # self._send_request("/dumpToLog")
+        pass
 
     def _send_request(self, path, data=None):
         if isinstance(data, dict):

@@ -1,7 +1,7 @@
 version: '2'
 services:
   mock_server:
-    image: jamesdbloom/mockserver:mockserver-3.11
+    image: mockserver/mockserver:mockserver-5.10.0
   mock_tester:
     build:
       context: .
