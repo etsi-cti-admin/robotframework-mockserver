@@ -66,6 +66,9 @@ class MockServerLibrary(object):
             match_type = 'STRICT' if exact else 'ONLY_MATCHING_FIELDS'
             req['body'] = {'type': body_type, 'json': json.dumps(body), 'matchType': match_type}
 
+        if body_type is 'JSON_SCHEMA' and body:
+            req['body'] = {'type': body_type, 'json': json.dumps(body)}
+
         return req
 
     def create_mock_response(self, status_code, headers=None, body_type='JSON', body=None):
@@ -96,6 +99,42 @@ class MockServerLibrary(object):
             rsp['body'] = json.dumps(body)
 
         return rsp
+
+    def create_mock_http_forward(self, path, delay=1, unit='SECONDS'):
+        """Creates a mock http override forward to be used by mockserver.
+
+        Returns the http forward in a dictionary format.
+
+        `path` is the new url where to forward the request
+
+        `delay` is the delay of the forward action
+
+        `unit` is the unit of the delay time (default "SECONDS")
+        """
+        fwd = {}
+        fwd['httpRequest'] = {'path': path}
+        fwd['delay'] = {'timeUnit': unit, 'value': delay}
+
+        return fwd
+
+    def create_mock_expectation_with_http_forward(self, request, forward, count=1, unlimited=True):
+        """Creates a mock expectation with request and forward action to be used by mockserver.
+
+        `request` is a mock request matcher in a dictionary format.
+
+        `forward` is a mock forward in a dictionary format.
+
+        `count` is the number of expected requests
+
+        `unlimited` is a boolean value which, if enabled, allows unspecified number of
+        requests to reply to
+        """
+        data = {}
+        data['httpRequest'] = request
+        data['httpOverrideForwardedRequest'] = forward
+        data['times'] = {'remainingTimes': int(count), 'unlimited': unlimited}
+
+        self.create_mock_expectation_with_data(data)
 
     def create_mock_expectation(self, request, response, count=1, unlimited=True):
         """Creates a mock expectation to be used by mockserver.
