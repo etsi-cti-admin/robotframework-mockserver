@@ -62,11 +62,11 @@ class MockServerLibrary(object):
         req['method'] = method
         req['path'] = path
 
-        if body_type is 'JSON' and body:
+        if body_type == 'JSON' and body:
             match_type = 'STRICT' if exact else 'ONLY_MATCHING_FIELDS'
             req['body'] = {'type': body_type, 'json': json.dumps(body), 'matchType': match_type}
 
-        if body_type is 'JSON_SCHEMA' and body:
+        if body_type == 'JSON_SCHEMA' and body:
             req['body'] = {'type': body_type, 'json': json.dumps(body)}
 
         return req
@@ -95,7 +95,7 @@ class MockServerLibrary(object):
                 rsp['headers'].append(header)
                 logger.debug("Add header - header: {}".format(header))
 
-        if body_type is 'JSON' and body:
+        if body_type == 'JSON' and body:
             rsp['body'] = json.dumps(body)
 
         return rsp
