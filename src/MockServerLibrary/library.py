@@ -53,7 +53,7 @@ class MockServerLibrary(object):
 
         `body_type` is the type of the request body, e.g. JSON
 
-        `body` is a dictionary of the json attribute(s) to match
+        `body` is a dictionary or string of the json attribute(s) to match
 
         `exact` is a boolean value which specifies whether the body should match fully (=true),
         or if only specified fields should match (=false)
@@ -67,7 +67,11 @@ class MockServerLibrary(object):
             req['body'] = {'type': body_type, 'json': json.dumps(body), 'matchType': match_type}
 
         if body_type == 'JSON_SCHEMA' and body:
-            req['body'] = {'type': body_type, 'json': json.dumps(body)}
+            if isinstance(body, str):
+                json_string = body
+            else:
+                json_string = json.dumps(body)
+            req['body'] = {'type': body_type, 'jsonSchema': json_string}
 
         return req
 

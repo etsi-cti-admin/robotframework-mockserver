@@ -2,3 +2,5 @@ robotframework>=3.1.1
 requests>=2.21.0
 robotframework-requests>=0.5.0
 dist/robotframework-mockserver-development.tar.gz
+robotframework-jsonlibrary==0.3
+robotframework-jsonschemalibrary==1.0

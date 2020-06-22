@@ -3,6 +3,7 @@ Library  String
 Library  Collections
 Library  RequestsLibrary
 Library  MockServerLibrary
+Library    JSONLibrary
 Suite Setup  Create Sessions
 Test Teardown  Reset Mock Server
 
@@ -12,12 +13,15 @@ ${MOCK_URL}
 ${ENDPOINT}  /endpoint
 &{BODY}  var1=value1  var2=value2
 &{HEADERS}  Content-type=application/json  Cache-Control=max-age\=3600
+&{INPUT_HEADERS}  Content-type=application/json  Cache-Control=max-age\=3600  Length=0
 ${MOCK_REQ}  {"method": "GET", "path": "${ENDPOINT}"}
 ${MOCK_RSP}  {"statusCode": 200}
 ${MOCK_TIMES}  {"remainingTimes": 1, "unlimited": true}
 ${MOCK_DATA}  {"httpRequest": ${MOCK_REQ}, "httpResponse": ${MOCK_RSP}, "times": ${MOCK_TIMES}}
 ${VERIFY_DATA}  {"httpRequest": ${MOCK_REQ}, "times": {"atLeast": 1, "atMost": 1}}
-
+${SCHEMA}  { "type" : "object", "required": [ "a"], "properties" : { "a": { "type" : "string"}, "b" : { "type": "number" } } }
+${MATCHES_SCHEMA}  { "a": "aaa", "b": 42 }
+${BREAKS_SCHEMA}  { "b": 42 }
 
 *** Test Cases ***
 Success On Expected GET
@@ -67,6 +71,18 @@ Failure On POST With Mismatched Body
     &{mismatched}=  Create Dictionary  var1=mismatch  var2=value2
     Send POST Expect Failure  ${ENDPOINT}  ${mismatched}
 
+Success On Expected POST With Json Schema
+    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  body_type=JSON_SCHEMA  body=${SCHEMA}
+    &{rsp}=  Create Mock Response  status_code=201
+    Create Mock Expectation  ${req}  ${rsp}
+    Send POST Expect Success  ${ENDPOINT}  ${MATCHES_SCHEMA}
+
+Failure On POST With Mismatched Schema
+    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  body_type=JSON_SCHEMA  body=${SCHEMA}
+    &{rsp}=  Create Mock Response  status_code=201
+    Create Mock Expectation  ${req}  ${rsp}
+    Send POST Expect Failure  ${ENDPOINT}  ${BREAKS_SCHEMA}
+
 Success On Verify
     &{req}=  Create Mock Request Matcher  GET  ${ENDPOINT}
     &{rsp}=  Create Mock Response  status_code=200
@@ -98,6 +114,14 @@ Success On Verify POST With Body
     &{rsp}=  Create Mock Response  status_code=201
     Create Mock Expectation  ${req}  ${rsp}
     Send POST Expect Success  ${ENDPOINT}  ${BODY}
+    Verify Mock Expectation  ${req}
+
+Success On Verify POST With Headers
+    &{req}=  Create Mock Request Matcher  POST  ${ENDPOINT}  headers=${HEADERS}
+    &{rsp}=  Create Mock Response  status_code=201
+    Create Mock Expectation  ${req}  ${rsp}
+    #Send POST Expect Success  ${ENDPOINT}  ${BODY}  headers=${INPUT_HEADERS}
+    Send POST Expect Success with Headers  ${ENDPOINT}  ${BODY}  headers=&{INPUT_HEADERS}
     Verify Mock Expectation  ${req}
 
 Failure On Verify With Missing GET
@@ -248,14 +272,24 @@ Send GET Expect Failure
 
 Send POST Expect Success
     [Arguments]  ${endpoint}=${ENDPOINT}  ${body}=${BODY}  ${response_code}=201
-    Send POST  ${endpoint}  ${body}  ${response_code}
+    Send POST  ${endpoint}  ${body}  ${response_code}  ${headers}=${None}
+
+Send POST Expect Success with Headers
+    [Arguments]  ${endpoint}=${ENDPOINT}  ${body}=${BODY}  ${response_code}=201  ${headers}=${None}
+    Send POST With Headers  ${endpoint}  ${body}  ${response_code}  headers=${headers}
 
 Send POST Expect Failure
     [Arguments]  ${endpoint}=${ENDPOINT}  ${body}=${BODY}  ${response_code}=404
     Send POST  ${endpoint}  ${body}  ${response_code}
 
+Send POST with Headers
+    [Arguments]  ${endpoint}  ${body}  ${response_code}  ${headers}=${None}
+    ${body_json}=  Evaluate  json.dumps(${body})  json
+    ${rsp}=  Post Request  server  ${endpoint}  headers=${headers}  data=${body_json}
+    Should Be Equal As Strings  ${rsp.status_code}  ${response_code}
+
 Send POST
-    [Arguments]  ${endpoint}  ${body}  ${response_code}
+    [Arguments]  ${endpoint}  ${body}  ${response_code}  ${headers}=${None}
     ${body_json}=  Evaluate  json.dumps(${body})  json
     ${rsp}=  Post Request  server  ${endpoint}  data=${body_json}
     Should Be Equal As Strings  ${rsp.status_code}  ${response_code}
